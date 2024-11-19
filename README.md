@@ -1,4 +1,4 @@
-# nostr-n8n
+# Nostr-n8n
 
 Nostr is a new protocol for adding a social layer to the Internet. n8n is a workflow automation tool. This repository contains workflows which use n8n with Nostr to augment a Nostr user's experience on the network.
 
