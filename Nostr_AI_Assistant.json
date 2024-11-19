@@ -1,0 +1,1045 @@
+{
+  "name": "Nostr AI Assistant v1.0 – Trainer and Jonny",
+  "nodes": [
+    {
+      "parameters": {
+        "model": "claude-3-5-sonnet-20241022",
+        "options": {}
+      },
+      "id": "6861715c-9709-420d-a86c-a0467bb1b6c2",
+      "name": "Anthropic Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.2,
+      "position": [
+        2140,
+        36
+      ],
+      "credentials": {
+        "anthropicApi": {
+          "id": "8lIDbREup4wrpVaQ",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "ccd5542a-81f5-4d6b-b4dc-01aa80e2b321",
+      "name": "SerpAPI",
+      "type": "@n8n/n8n-nodes-langchain.toolSerpApi",
+      "typeVersion": 1,
+      "position": [
+        2460,
+        36
+      ],
+      "credentials": {
+        "serpApi": {
+          "id": "au63izeJWYjUHfwX",
+          "name": "SerpAPI account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "102eb3cb-3b23-4653-a6d4-c9350bfb6c07",
+      "name": "Calculator",
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        2620,
+        36
+      ]
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "sessionId"
+      },
+      "id": "e3dad512-111c-412f-9ed4-ae1607b41776",
+      "name": "Window Buffer Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.2,
+      "position": [
+        2300,
+        36
+      ],
+      "notesInFlow": false
+    },
+    {
+      "parameters": {},
+      "id": "236eec22-cb0e-42c8-a3b4-c481ed91b357",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1440,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the single message input\nconst message = $input.item.json; // Access the first item in the input\n\n// Initialize the result array\nlet results = [];\n\n// Safely access the tags array from the message\nconst tags = message.tags || []; // Default to an empty array if undefined\n\n// Extract all \"e\" tags\nconst eTags = tags\n    .filter(tag => tag[0] === 'e') // Filter for \"e\" tags\n    .map(tag => ({\n        e_tag: tag[1],          // The event ID\n        marker: tag[3] || null, // Optional marker, default to null\n        id: message.id          // Include the note ID of the current message\n    }));\n\n// Add the extracted eTags to the results\nresults = results.concat(eTags);\n\n// Return the structured list as separate items\nreturn results.map(eTag => ({ json: eTag }));"
+      },
+      "id": "d47109da-1233-4b9e-9edf-bf23df60ce0c",
+      "name": "Get e Tags of Prior Notes",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1180,
+        -60
+      ]
+    },
+    {
+      "parameters": {
+        "options": {
+          "reset": false
+        }
+      },
+      "id": "5a74d3d2-36e1-4f9c-994c-ba0dc1c65a0f",
+      "name": "Loop Over Prior Notes",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1400,
+        20
+      ]
+    },
+    {
+      "parameters": {
+        "strategy": "eventid",
+        "eventid": "={{ $json.e_tag }}"
+      },
+      "id": "377de3f8-bc67-4cfc-a4db-3614bcc3aa7b",
+      "name": "Read Prior Note from Thread",
+      "type": "n8n-nodes-nostrobots.nostrobotsread",
+      "typeVersion": 1,
+      "position": [
+        1620,
+        20
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "event",
+        "content": "={{ $json.output }}",
+        "tags": "=[\n  [\n    \"e\",\n    \"{{ $json.id }}\",\n    \"\",\n    \"reply\"\n  ],\n  [\n    \"p\",\n    \"{{ $json.pubkey }}\"\n  ]\n]",
+        "relay": "={{ $('Set Variables').first().json.relays }}"
+      },
+      "id": "e4eec79a-f0fc-4f57-b96b-0a574555663c",
+      "name": "Post Note to Nostr",
+      "type": "n8n-nodes-nostrobots.nostrobots",
+      "typeVersion": 1,
+      "position": [
+        3320,
+        20
+      ],
+      "credentials": {
+        "nostrobotsApi": {
+          "id": "1tyiyGRo3Vfq1pdT",
+          "name": "Nostrobots Jonny User"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "5861c447-1730-4bed-9768-80f6a5eac9df",
+              "leftValue": "={{ $json.hasResponded }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "6d678d3a-87fe-4535-b3bc-fa96d02666a8",
+      "name": "Has Responded?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        380,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "de30de32-0a0e-4899-8cde-8816d73102bd",
+              "leftValue": "={{ $('Get Mentioned Notes').item.json.pubkey }}",
+              "rightValue": "={{ $('Transform Owner Key').item.json.output }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "2e13bc82-916b-4fda-9289-4cdb205491b0",
+      "name": "Is Authorised?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -280,
+        -180
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Assuming `items` is the array of merged notes being passed into this node\nconst items = $input.all();\n\n// Separate the notes based on the pubkey\nconst aiPubkey = $node[\"Transform Assistant Key\"].json[\"output\"]; // Replace with the actual pubkey of the AI\nconst aiNotes = [];\nconst otherNotes = [];\n\nitems.forEach(item => {\n  const pubkey = item.json.pubkey;\n  if (pubkey === aiPubkey) {\n    aiNotes.push(item.json);\n  } else {\n    otherNotes.push(item.json);\n  }\n});\n\n// Collect all \"e\" tags from AI notes\nconst aiETags = aiNotes.flatMap(note =>\n  note.tags\n    .filter(tag => tag[0] === \"e\")\n    .map(tag => tag[1]) // Extract the event ID from the \"e\" tag\n);\n\n// Check if each note ID matches any \"e\" tag in AI notes\nconst result = otherNotes.map(note => {\n  const hasResponded = aiETags.includes(note.id); // Check if note.id is in aiETags\n  return {\n    ...note,\n    hasResponded,\n  };\n});\n\n// Return the results in a format n8n expects\nreturn result.map(res => ({\n  json: res\n}));\n"
+      },
+      "id": "854a6c74-c00a-4738-ac34-7110753ca59f",
+      "name": "Check If Responded Already",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        160,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Check Nostr Mentions and Decide if to Respond \n\n- Has the AI been Mentioned in a Note? \n- Is the user who Mentioned the AI Authorised? \n- Does the Note have children that are also Mentions?\n- Has the Note been responded to already?",
+        "height": 855.8765683425659,
+        "width": 1170.842471864165,
+        "color": 4
+      },
+      "id": "2f27e943-cf0c-46bd-931e-da5db2cf7444",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -591.8058680593185,
+        -352.13363333694576
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Create Good Input for the AI \nThe AI should respond so let's give it a high quality input. We source the entire threaded conversation and then structure it with context hints as flat text.",
+        "height": 844.5827661417397,
+        "width": 1167.2206839105722
+      },
+      "id": "699a6708-fb26-4b9f-860c-34b1276180ee",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        864.2566815188284,
+        -342
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Engage the AI \nWe give the AI the good content, useful tools, and a complete system prompt which explains its context and the tools at its disposal.",
+        "height": 843.086457394741,
+        "width": 713.8875456537609
+      },
+      "id": "c64c0ec8-66b4-403e-9304-1597d40b86c2",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2060,
+        -342
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 10
+            }
+          ]
+        }
+      },
+      "id": "61dfbc20-f74e-4b9f-a5f8-102ccc4418f8",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1440,
+        140
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## AI Assistant Workflow\n\nThis workflow triggers a AI Assistant to respond to Notes on Nostr, if–\n\n- Assistant npub is Mentioned in a Note (the user shows intent),\n- User is an Owner of Assistant (the user is authorised),\n- Tagged Note is not the child of another tagged post (if Note is threaded, reply to end of thread), \n- Tagged Note has not yet been replied to by assistant (for deduplication),\n- We run this workflow periodically or if triggered.\n\n## Requirements\n\nTo use this workflow we need–\n\n- [Nostrobots Community Nodes](https://github.com/ocknamo/n8n-nodes-nostrobots/tree/main), by [Ocknamo](https://njump.me/npub1y6aja0kkc4fdvuxgqjcdv4fx0v7xv2epuqnddey2eyaxquznp9vq0tp75l) \n- Credentials for N8N: Nostr, Anthropic, and SerpAPI,\n- Workflow variables in the Set Variables Node: Owner Npub, Assistant Npub, Assistant Name, Relays.",
+        "height": 856.3663941159213,
+        "width": 892.4874607244267,
+        "color": 6
+      },
+      "id": "e9d7b82b-46f6-4033-9003-48e55331ac3c",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1520,
+        -360
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3ff2ce91-be1b-459b-963a-8c210e60d39a",
+              "name": "ownerNpub",
+              "value": "npub1nwyjnuxaalyke84hphl30mkz0qnzw7kwu7m9xm70ssa4jtad0y7q8pnucu",
+              "type": "string"
+            },
+            {
+              "id": "dbebb24e-5ea5-4fd9-8aaf-1b3cc25d0c4e",
+              "name": "assistantNpub",
+              "value": "npub1ahjpx53ewavp23g5zj9jgyfrpr8djmgjzg5mpe4xd0z69dqvq0kq2lf353",
+              "type": "string"
+            },
+            {
+              "id": "12cce8a3-3306-4e99-87b1-dc9d1040cfdc",
+              "name": "assistantName",
+              "value": "Jonny",
+              "type": "string"
+            },
+            {
+              "id": "5e04ae08-df8f-4921-b03d-67952e732fe6",
+              "name": "relays",
+              "value": "wss://relay.damus.io,wss://relay.primal.net,wss://relay.nostr.band,wss://relay.nostrplebs.com,wss://nostr-01.yakihonne.com,wss://nostr-02.yakihonne.com",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "04a2b522-5e45-4691-8f57-982c569e7035",
+      "name": "Set Variables",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1220,
+        140
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Post to Nostr \nFor each Note we have the AI Assistant's response and the context of the Note. \nLet's post the Note(s) to Nostr. We pause between each post to avoid timeout errors.",
+        "height": 840.0511859958058,
+        "width": 968.5037480794283,
+        "color": 6
+      },
+      "id": "450e3c3b-b95b-415c-858d-c13fa684f9aa",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2800,
+        -340
+      ]
+    },
+    {
+      "parameters": {
+        "pubkey": "npub1ahjpx53ewavp23g5zj9jgyfrpr8djmgjzg5mpe4xd0z69dqvq0kq2lf353",
+        "unit": "hour",
+        "relay": "={{ $('Set Variables').item.json.relays }}"
+      },
+      "id": "b7ab029f-9a87-40cb-b1a5-08094181a59f",
+      "name": "Get Recent Responses",
+      "type": "n8n-nodes-nostrobots.nostrobotsread",
+      "typeVersion": 1,
+      "position": [
+        -280,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Retrieve all input items (messages)\nconst messages = $input.all();\n\n// Extract all event IDs for comparison\nconst eventIDs = messages.map(message => message.json.id);\n\n// Process each message\nconst results = messages.map(message => {\n    const currentEventId = message.json.id; // The current message's event ID\n    \n    // Check if the current event ID is referenced in another message's \"e\" tags\n    const hasChildMention = messages.some(otherMessage => {\n        const otherTags = otherMessage.json.tags || []; // Safely access tags\n        const otherETags = otherTags.filter(tag => tag[0] === 'e').map(tag => tag[1]); // Extract \"e\" tags\n        return otherETags.includes(currentEventId); // Check if current ID is referenced\n    });\n\n    // Return the original message data with the \"hasChildMention\" flag\n    return {\n        json: {\n            ...message.json, // Spread the original message data\n            hasChildMention  // Add the new flag\n        }\n    };\n});\n\n// Log for debugging\nconsole.log(\"Processed Messages with hasChildMention:\", results);\n\n// Return results for downstream nodes\nreturn results;\n"
+      },
+      "id": "978bca00-1a39-45bb-8995-77ced21136fe",
+      "name": "Check If Has Child Mention",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -280,
+        60
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "59b982d5-81e3-4d48-8fd5-bc0df070bdfe",
+              "leftValue": "={{ $json.hasChildMention }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "870078cf-7645-4d21-bc92-d19f5ee99bc6",
+      "name": "Has Child Mention?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -60,
+        60
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "29d6bbad-8d1e-4795-ad6a-ca01eb578475",
+      "name": "Ready",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        640,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "strategy": "mention",
+        "mention": "={{ $('Set Variables').item.json.assistantNpub }}",
+        "unit": "hour",
+        "relay": "={{ $('Set Variables').item.json.relays }}"
+      },
+      "id": "061a5cde-5523-4236-9bd8-4b52647bd151",
+      "name": "Get Mentioned Notes",
+      "type": "n8n-nodes-nostrobots.nostrobotsread",
+      "typeVersion": 1,
+      "position": [
+        -540,
+        140
+      ],
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {},
+      "id": "d157b3af-7a36-47c4-b466-fa444ad95dd6",
+      "name": "Input for e Tag Loop",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        960,
+        -184
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Retrieve all input items\nconst items = $input.all();\n\n// Create a map to assign roles to pubkeys\nconst roleMap = {};\nlet userCount = 1;\n\n// Function to get the role based on pubkey\nconst getRole = (pubkey) => {\n    if (pubkey === 'ede41352397758154514148b24112308ced96d121229b0e6a66bc5a2b40c03ec') {\n        return `Assistant @${pubkey}`;\n    }\n    if (!roleMap[pubkey]) {\n        roleMap[pubkey] = `User ${userCount++}`;\n    }\n    return `${roleMap[pubkey]} @${pubkey}`;\n};\n\n// Initialize an array to hold the formatted messages\nlet formattedMessages = [];\n\n// Loop through each message and format it\nitems.forEach((item, index) => {\n    // Extract relevant fields\n    const pubkey = item.json.pubkey;\n    const content = item.json.content;\n    const createdAt = new Date(item.json.created_at * 1000).toISOString(); // Convert UNIX timestamp to ISO format\n\n    // Get the role for the pubkey\n    const role = getRole(pubkey);\n\n    // Format the message with chronological markers and roles\n    formattedMessages.push(\n        `Message ${index + 1}\\nFrom: ${role}\\nSent: ${createdAt}\\nContent: ${content}\\n---`\n    );\n});\n\n// Combine all formatted messages into a single text block\nconst messagesForAI = formattedMessages.join('\\n');\n\n// Return the formatted text block as a single item\nreturn [{ json: { messagesForAI } }];\n"
+      },
+      "id": "bf6185a1-f485-4184-8131-1c31476e8fdb",
+      "name": "Format Thread for AI Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1840,
+        -204
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "1d827e12-89f2-4af5-945a-7af35371f93e",
+      "name": "Loop Over Items To Create Thread",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1840,
+        240
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "3a18b22d-3ce6-4c52-b775-aae6687f7a6c",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        -60,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "transformKey",
+        "relayhints": "={{ $json.relays }}",
+        "transformTo": "hexpubkey",
+        "transformInput": "={{ $('Set Variables').item.json.ownerNpub }}"
+      },
+      "id": "76f565e1-420d-46ce-9685-e7f20672fec1",
+      "name": "Transform Owner Key",
+      "type": "n8n-nodes-nostrobots.nostrobotsutils",
+      "typeVersion": 1,
+      "position": [
+        -1000,
+        140
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "transformKey",
+        "transformTo": "hexpubkey",
+        "transformInput": "={{ $('Set Variables').item.json.assistantNpub }}"
+      },
+      "id": "419e33ad-2b7c-46c3-8e44-5d984affa69e",
+      "name": "Transform Assistant Key",
+      "type": "n8n-nodes-nostrobots.nostrobotsutils",
+      "typeVersion": 1,
+      "position": [
+        -780,
+        140
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "id",
+        "joinMode": "keepEverything",
+        "options": {}
+      },
+      "id": "9a8637d1-bfc8-4200-93b5-7052f974a013",
+      "name": "Merge Thread as Table",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        1620,
+        -204
+      ]
+    },
+    {
+      "parameters": {
+        "text": "=Here is a conversation. Respond to the latest message in this conversation as a helpful assistant with emojis: {{ $json.messagesForAI }}",
+        "options": {
+          "systemMessage": "=Assistant (aka {{ $('Set Variables').first().json.assistantName }}) is a large language model who operates on the Nostr network. A workflow exists to invoke Assistant if Assistant is tagged. One method for tagging Assistant is to specify Assistant's npub public key i.e. \"nostr:{{ $('Set Variables').first().json.assistantNpub }}\" or specify Assistant's nprofile address e.g. \"nostr:nprofile1qqswmeqn2guhwkq4g52pfzeyzy3s3nked5fpy2dsu6nxh3dzksxq8mqprpmhxue69uhkummnw3ezuendwsh8w6t69e3xj7300740sm\".\n\nAssistant is designed to be able to assist with a wide range of tasks, from answering simple questions to providing in-depth explanations and discussions on a wide range of topics. As a language model, Assistant is able to generate human-like text based on the input it receives, allowing it to engage in natural-sounding conversations and provide responses that are coherent and relevant to the topic at hand.\n\nAssistant is constantly learning and improving, and its capabilities are constantly evolving. It is able to process and understand large amounts of text, and can use this knowledge to provide accurate and informative responses to a wide range of questions. Additionally, Assistant is able to generate its own text based on the input it receives, allowing it to engage in discussions and provide explanations and descriptions on a wide range of topics.\n\nOverall, Assistant is a powerful system that can help with a wide range of tasks and provide valuable insights and information on a wide range of topics. Whether you need help with a specific question or just want to have a conversation about a particular topic, Assistant is here to assist.\n\nWhen Assistant receives a message it will be asked to respond. \n\nAssistant may be given a message history including older messages in a conversation. When so given, Assistant should always use this context and acknowledge it in the reply where appropriate. Assistant should respond to the latest message and use the older messages to inform its context. Old messages may include messages previously sent by Assistant. \n\nAssistant has a window memory of old messages which it can use to inform its context. \n\nAssistant is also able to use the internet and a calculator. Assistant's answers can include links to websites it finds on the internet. \n\nWhen responding, Assistant should disregard the the npub or nprofile used to tag it, as that is a part of the process of invoking Assistant. It should respond to the rest of the message.\n\nWhen Assistant responds, it should use an Australian localisation. This means to use Australian english, Australian date-time format, Celsius rather than Fahrenheit, kilometres rather than miles, etc."
+        }
+      },
+      "id": "eb71644d-1be2-4571-97bc-e69fbf8dd85b",
+      "name": "AI Assistant",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        2280,
+        -204
+      ],
+      "typeVersion": 1.2,
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "id": "8cd1309c-61bc-4000-8915-0ae60a78e614",
+      "name": "Merge Ready to Post Note",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        2880,
+        -202
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 11
+      },
+      "id": "24d28daa-f190-41a4-94c9-1b4604b4224c",
+      "name": "Wait",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        3560,
+        20
+      ],
+      "webhookId": "ab90cedc-af2d-41db-8bad-bac4187cf835"
+    },
+    {
+      "parameters": {},
+      "id": "692883c4-beec-407d-bfc7-a9baf9b340d3",
+      "name": "Take No Action",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        640,
+        40
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "7a02f8df-933d-4707-a591-2edd2a06a618",
+      "name": "All Notes Posted Successfully",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        3560,
+        -140
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "c3e84c9f-7b56-4c57-aa96-be9231c0e612",
+      "name": "Loop Over Notes",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        3100,
+        -200
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Anthropic Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Assistant",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SerpAPI": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Assistant",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Assistant",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Assistant",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Set Variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get e Tags of Prior Notes": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Prior Notes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Prior Notes": {
+      "main": [
+        [
+          {
+            "node": "Merge Thread as Table",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Read Prior Note from Thread",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Prior Note from Thread": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Prior Notes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check If Responded Already": {
+      "main": [
+        [
+          {
+            "node": "Has Responded?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Authorised?": {
+      "main": [
+        [
+          {
+            "node": "Check If Has Child Mention",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Take No Action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set Variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Variables": {
+      "main": [
+        [
+          {
+            "node": "Transform Owner Key",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Recent Responses": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Has Responded?": {
+      "main": [
+        [
+          {
+            "node": "Take No Action",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Ready",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check If Has Child Mention": {
+      "main": [
+        [
+          {
+            "node": "Has Child Mention?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Child Mention?": {
+      "main": [
+        [
+          {
+            "node": "Take No Action",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Recent Responses",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Mentioned Notes": {
+      "main": [
+        [
+          {
+            "node": "Is Authorised?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Input for e Tag Loop": {
+      "main": [
+        [
+          {
+            "node": "Get e Tags of Prior Notes",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge Thread as Table",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Ready": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items To Create Thread",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge Ready to Post Note",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Thread for AI Input": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items To Create Thread",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items To Create Thread": {
+      "main": [
+        [
+          {
+            "node": "AI Assistant",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Input for e Tag Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Check If Responded Already",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform Owner Key": {
+      "main": [
+        [
+          {
+            "node": "Transform Assistant Key",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform Assistant Key": {
+      "main": [
+        [
+          {
+            "node": "Get Mentioned Notes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Thread as Table": {
+      "main": [
+        [
+          {
+            "node": "Format Thread for AI Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Assistant": {
+      "main": [
+        [
+          {
+            "node": "Merge Ready to Post Note",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Ready to Post Note": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Notes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Notes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post Note to Nostr": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Notes": {
+      "main": [
+        [
+          {
+            "node": "All Notes Posted Successfully",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Post Note to Nostr",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "3d54d9a1-fc1f-4c52-ba23-7df752a6d240",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ccba4d051fa49b8de562911d1fd956f10bf11fa96365b82f0a8ade5091902b75"
+  },
+  "id": "FV5ld6EeRozKNfKL",
+  "tags": [
+    {
+      "name": "AI Assistant",
+      "id": "KMLMdy1KUlw5nWn5",
+      "createdAt": "2024-11-18T23:52:19.670Z",
+      "updatedAt": "2024-11-18T23:52:19.670Z"
+    },
+    {
+      "name": "Nostr",
+      "id": "y4Fxchl80CmW2UNH",
+      "createdAt": "2024-11-18T23:52:11.671Z",
+      "updatedAt": "2024-11-18T23:52:11.671Z"
+    }
+  ]
+}
