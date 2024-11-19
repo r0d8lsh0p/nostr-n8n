@@ -17,6 +17,9 @@ At this time there is one workflow which allows you to create your own Nostr AI 
 ## n8n Workflows
 
 ### Nostr AI Assistant
+
+![Screenshot of Nostr AI Assistant v1.0 Workflow](Screenshots/Nostr-AI-Assistant-v1-0-Workflow.png)
+
 The Nostr AI Assistant workflow powers a Npub of your choosing to become your Assistant, and respond to your Notes when Mentioned. 
 
 You can use this to get all the functionality of a "chat-gpt-like" LLM AI assistant interface, without having to leave your Nostr client.
