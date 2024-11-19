@@ -10,9 +10,9 @@ At this time there is one workflow which allows you to create your own Nostr AI 
 
 - **n8n**: Install a self-hosted n8n on your system. You can follow the instructions from the [n8n website](https://docs.n8n.io/hosting/),
 - **Nostrobots**: Install [Nostrobots Community Nodes](https://github.com/ocknamo/n8n-nodes-nostrobots/tree/main) by [Ocknamo](https://njump.me/npub1y6aja0kkc4fdvuxgqjcdv4fx0v7xv2epuqnddey2eyaxquznp9vq0tp75l) with instructions from the [n8n website](https://docs.n8n.io/integrations/community-nodes/installation/),
-- **Add workflow from Github to n8n**: For the workflow of your choice 1. In Github copy the URL for the Raw .json, 2. In n8n create a new workflow, then click "..." and "Import from URL",
+- **Add workflow from Github to n8n**: For the workflow of your choice 1. In Github copy the URL for the Raw .json ([example](https://github.com/r0d8lsh0p/nostr-n8n/raw/refs/heads/main/Nostr_AI_Assistant.json)), 2. In n8n create a new workflow, then click "..." and "Import from URL",
 - **Credentials**: Add whatever credentials are required by the Nodes,
-- **Setting**: Specify whatever settings are required by the workflow. Typically all required settings are placed in a "Set" Node at the start of the workflow following the Trigger Node.
+- **Settings**: Specify whatever settings are required by the workflow. Typically all required settings are placed in a "Set" Node at the start of the workflow following the Trigger Node.
 
 ## n8n Workflows
 
