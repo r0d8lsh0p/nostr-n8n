@@ -23,11 +23,11 @@ At this time there is one workflow which allows you to create your own Nostr AI 
 
 ### Nostr Simple Post
 
-The Nostr Form to Post a Note workflow powers a Npub of your choosing, and allows you to delegate the ability to post notes from that Npub without needing to handover the private keys.
+The "Nostr Form to Post a Note" workflow powers a Npub of your choosing, and allows you to delegate the ability to post notes from that Npub without needing to handover the private keys.
 
 The workflow is designed to be a very simple example of Nostr, Nostrobots and n8n working together.
 
-#### Set up
+#### Set up Nostr Simple Post
 
 - **Prerequisites**: Complete the prerequisites as above to have a working n8n instance with Nostrobots Community Nodes installed,
 - **Add cedentials for n8n**: Nostr user private key, and (optional) username and password for the form,
@@ -39,7 +39,7 @@ The workflow is designed to be a very simple example of Nostr, Nostrobots and n8
 
 ![Screenshot of Nostr AI Assistant v1.0 Workflow](Screenshots/Nostr-AI-Assistant-v1-0-Workflow.png)
 
-The Nostr AI Assistant workflow powers a Npub of your choosing to become your Assistant, and respond to your Notes when Mentioned. 
+The "Nostr AI Assistant" workflow powers a Npub of your choosing to become your Assistant, and respond to your Notes when Mentioned.
 
 You can use this to get all the functionality of a "chat-gpt-like" LLM AI assistant interface, without having to leave your Nostr client.
 
@@ -53,7 +53,7 @@ This workflow triggers your AI Assistant to respond to Notes on Nostr, if–
 - Tagged Note has not yet been replied to by assistant (for deduplication),
 - We run this workflow periodically or if triggered.
 
-#### Set up
+#### Set up Nostr AI Assistant
 
 - **Prerequisites**: Complete the prerequisites as above to have a working n8n instance with Nostrobots Community Nodes installed,
 - **Create Assistant Nostr Profile**: Create a new Nostr profile to be the Assistant, backup the npub and nsec keys,
