@@ -16,6 +16,11 @@ At this time there is one workflow which allows you to create your own Nostr AI 
 
 ## n8n Workflows
 
+### Contents
+
+- [Nostr Simple Post](#nostr-simple-post)
+- [Nostr AI Assistant](#nostr-ai-assistant)
+
 ### Nostr Simple Post
 
 The Nostr Form to Post a Note workflow powers a Npub of your choosing, and allows you to delegate the ability to post notes from that Npub without needing to handover the private keys.
@@ -25,7 +30,7 @@ The workflow is designed to be a very simple example of Nostr, Nostrobots and n8
 #### Set up
 
 - **Prerequisites**: Complete the prerequisites as above to have a working n8n instance with Nostrobots Community Nodes installed,
-- **Add cedentials for n8n**: Nostr user private key, (optional) username and password for the form,
+- **Add cedentials for n8n**: Nostr user private key, and (optional) username and password for the form,
 - **Set workflow variables in the Set Variables Node**: Nostr relays,
 - **To use**: Give the URL, username, and password to the person you would like to post notes,
 - **To revoke access**: Change the form username and password, or deactivate the workflow.
