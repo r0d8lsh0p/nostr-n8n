@@ -1,0 +1,128 @@
+{
+  "name": "Nostr Form to Post a Note v1.0",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6220918e-5d54-4cc4-82d6-17f4cec2581b",
+              "name": "relays",
+              "value": "wss://relay.damus.io,wss://relay.primal.net,wss://relay.nostr.band,wss://relay.nostrplebs.com,wss://nostr-01.yakihonne.com,wss://nostr-02.yakihonne.com",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "6ed2024d-88bd-47f1-87fc-dfc710eb1634",
+      "name": "Set Variables",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        740,
+        1047.848405303711
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "basicAuth",
+        "formTitle": "Post to Nostr",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Post Note to Nostr",
+              "placeholder": "What's on your mind?",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false,
+          "buttonLabel": "Post"
+        }
+      },
+      "id": "c1d9c9da-ab9e-40c0-b6c6-1e58ba7946f1",
+      "name": "Write Note",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        520,
+        1047.848405303711
+      ],
+      "webhookId": "f1b11a84-d2e4-427c-bdd1-9426da94274e"
+    },
+    {
+      "parameters": {
+        "content": "={{ $('Write Note').item.json['Post Note to Nostr'] }}",
+        "relay": "={{ $json.relays }}"
+      },
+      "id": "e9c560e4-a81d-4f5a-bd30-00bda15c2d07",
+      "name": "Post Note to Nostr",
+      "type": "n8n-nodes-nostrobots.nostrobots",
+      "typeVersion": 1,
+      "position": [
+        960,
+        1047.848405303711
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Form to Post a Note \n\nA workflow to post a note to Nostr –\n\n- A very simple example of Nostr, Nostrobots and n8n working together,\n- Allows the owner of a Nostr key to delegate to another person the ability to post to their Nostr account, without needing to handover the private key,\n- The form can be password protected.\n\n### Requirements\n\nTo use this workflow we need –\n\n- [Nostrobots Community Nodes](https://github.com/ocknamo/n8n-nodes-nostrobots/tree/main) by [Ocknamo](https://njump.me/npub1y6aja0kkc4fdvuxgqjcdv4fx0v7xv2epuqnddey2eyaxquznp9vq0tp75l), \n- Credentials for N8N: Nostr user private key, (optional) username and password for the form,\n- Workflow variables set in the Set Variables Node: Relays.\n\n### In Use\n\nAdd to your n8n credentials the private key of the account you wish to delegate, and set a username and password for the form. Then, give the URL, username, and password to the person you would like to post notes. \n\nTo revoke access, change the form username and password, or deactivate the workflow.",
+        "height": 775.4958449250621,
+        "width": 674.9451807418826,
+        "color": 6
+      },
+      "id": "c2ee3f5e-3f61-4888-b62a-cf8220d55caf",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        460,
+        460
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Set Variables": {
+      "main": [
+        [
+          {
+            "node": "Post Note to Nostr",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write Note": {
+      "main": [
+        [
+          {
+            "node": "Set Variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "be5cbdcc-7f15-4a17-a44b-31724779e20c",
+  "meta": {
+    "instanceId": "ccba4d051fa49b8de562911d1fd956f10bf11fa96365b82f0a8ade5091902b75"
+  },
+  "id": "C6kx5BP0tRGsLu1a",
+  "tags": [
+    {
+      "createdAt": "2024-11-18T23:52:11.671Z",
+      "updatedAt": "2024-11-18T23:52:11.671Z",
+      "id": "y4Fxchl80CmW2UNH",
+      "name": "Nostr"
+    }
+  ]
+}
