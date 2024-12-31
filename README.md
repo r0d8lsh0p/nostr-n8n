@@ -27,7 +27,7 @@ A user can log into a webpage to view a simple form. Anything entered into the f
 
 The workflow is designed to be a very simple example of Nostr, Nostrobots and n8n working together.
 
-#### Set up Nostr Simple Post
+### Set up Nostr Simple Post
 
 - **Prerequisites**: Complete the prerequisites as above to have a working n8n instance with Nostrobots Community Nodes installed,
 - **Add cedentials for n8n**: Nostr user private key, and (optional) username and password for the form,
@@ -52,7 +52,7 @@ How it works–
 - We push a notification into Pushover,
 - We run this workflow periodically or if triggered.
 
-#### Set up Nostr Push Notify If Mentioned
+### Set up Nostr Push Notify If Mentioned
 
 - **Prerequisites**: Complete the prerequisites as above to have a working n8n instance with Nostrobots Community Nodes installed,
 - **Create a List on Nostr**: A kind 30000 list of pubkeys published to the Nostr network (you can create and publish this with [listr.lol](https://listr.lol) or any other client that supports lists. (E.g. An example "Notify If Mentioned" list which you can view in [listr.lol](https://listr.lol/npub1r0d8u8mnj6769500nypnm28a9hpk9qg8jr0ehe30tygr3wuhcnvs4rfsft/30000/naddr1qvzqqqr4xqpzqx760c0h894a5tg7lxgr8k506twrv2qs0yxln0nz7kgs8zae03xeqy2hwumn8ghj7un9d3shjtnyv9kh2uewd9hj7qghwaehxw309aex2mrp0yhxummnw3ezucnpdejz7qghwaehxw309aex2mrp0yh8qunfd4skctnwv46z7qg4waehxw309aex2mrp0yhxgctdw4eju6t09uq3wamnwvaz7tmjv4kxz7fwdehhxarj9e3xzmny9uqz5mrfwd68ytfevf3r2vnyvsmz6ef389nz6dpnxd3z6cfcxajz6ct9xa3xyefcvgmrjerp4rqr8f) or [njump.me](https://njump.me/naddr1qvzqqqr4xqpzqx760c0h894a5tg7lxgr8k506twrv2qs0yxln0nz7kgs8zae03xeqy2hwumn8ghj7un9d3shjtnyv9kh2uewd9hj7qghwaehxw309aex2mrp0yhxummnw3ezucnpdejz7qghwaehxw309aex2mrp0yh8qunfd4skctnwv46z7qg4waehxw309aex2mrp0yhxgctdw4eju6t09uq3wamnwvaz7tmjv4kxz7fwdehhxarj9e3xzmny9uqz5mrfwd68ytfevf3r2vnyvsmz6ef389nz6dpnxd3z6cfcxajz6ct9xa3xyefcvgmrjerp4rqr8f)),
@@ -78,7 +78,7 @@ How it works–
 - We push a notification into Pushover,
 - We run this workflow periodically or if triggered.
 
-#### Set up Nostr Push Notify If Posts a Note
+### Set up Nostr Push Notify If Posts a Note
 
 - **Prerequisites**: Complete the prerequisites as above to have a working n8n instance with Nostrobots Community Nodes installed,
 - **Create a List on Nostr**: Create a kind 30000 list of pubkeys published to the Nostr network (you can create and publish this with [listr.lol](https://listr.lol) or any other client that supports lists. E.g. An example "Notify If Posts a Note" list which you can view in [listr.lol](https://listr.lol/npub1r0d8u8mnj6769500nypnm28a9hpk9qg8jr0ehe30tygr3wuhcnvs4rfsft/30000/naddr1qvzqqqr4xqpzqx760c0h894a5tg7lxgr8k506twrv2qs0yxln0nz7kgs8zae03xeqq4xc6tnw3ez6dfsx5mnvefsvyknjwfsxvkngcmxx5kkyv3cv5kkgetyv5urzvnyv43nydcnxt288) or [njump.me](https://njump.me/naddr1qvzqqqr4xqpzqx760c0h894a5tg7lxgr8k506twrv2qs0yxln0nz7kgs8zae03xeqythwumn8ghj7un9d3shjtnswf5k6ctv9ehx2ap0qythwumn8ghj7un9d3shjtnwdaehgu3wvfskuep0qyghwumn8ghj7mn0wd68ytnhd9hx2tcpzemhxue69uhkummnw3ex2mrfw3jhxtn0wfnj7qg4waehxw309aex2mrp0yhxgctdw4eju6t09uqz5mrfwd68ytf4xq6nwdn9xpsj6wfexqej6drrvc6j6c3j8pjj6er9v3jnsvfjv3jkxv3h7a4evr)),
@@ -105,7 +105,7 @@ This workflow triggers your AI Assistant to respond to Notes on Nostr, if–
 - Tagged Note has not yet been replied to by assistant (for deduplication),
 - We run this workflow periodically or if triggered.
 
-#### Set up Nostr AI Assistant
+### Set up Nostr AI Assistant
 
 - **Prerequisites**: Complete the prerequisites as above to have a working n8n instance with Nostrobots Community Nodes installed,
 - **Create Assistant Nostr Profile**: Create a new Nostr profile to be the Assistant, backup the npub and nsec keys,
