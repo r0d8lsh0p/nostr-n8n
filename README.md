@@ -14,14 +14,16 @@ My intent it to publish a variety of useful workflows.
 
 ## Contents
 
-- [Nostr Simple Form to Post a Note](#nostr-simple-form-to-post-a-note)
+- [Nostr Form to Post a Note](#nostr-form-to-post-a-note)
 - [Nostr Push Notify if Mentioned](#nostr-push-notify-if-mentioned)
 - [Nostr Push Notify If Posts a Note](#nostr-push-notify-if-posts-a-note)
 - [Nostr AI Assistant](#nostr-ai-assistant)
 
-## Nostr Simple Form to Post a Note
+## Nostr Form to Post a Note
 
 The "Nostr Form to Post a Note" workflow powers a Npub of your choosing, and allows you to delegate the ability to post notes from that Npub without needing to handover the private keys.
+
+A user can log into a webpage to view a simple form. Anything entered into the form is posted to the Nostr network from the Npub that is configured in the workflow.
 
 The workflow is designed to be a very simple example of Nostr, Nostrobots and n8n working together.
 
