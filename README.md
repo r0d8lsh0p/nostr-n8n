@@ -14,12 +14,12 @@ My intent it to publish a variety of useful workflows.
 
 ## Contents
 
-- [Nostr Simple Post](#nostr-simple-post)
+- [Nostr Simple Form to Post a Note](#nostr-simple-form-to-post-a-note)
 - [Nostr Push Notify if Mentioned](#nostr-push-notify-if-mentioned)
 - [Nostr Push Notify If Posts a Note](#nostr-push-notify-if-posts-a-note)
 - [Nostr AI Assistant](#nostr-ai-assistant)
 
-## Nostr Simple Post
+## Nostr Simple Form to Post a Note
 
 The "Nostr Form to Post a Note" workflow powers a Npub of your choosing, and allows you to delegate the ability to post notes from that Npub without needing to handover the private keys.
 
