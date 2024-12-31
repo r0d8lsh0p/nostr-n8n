@@ -14,16 +14,14 @@ At this time there is one workflow which allows you to create your own Nostr AI 
 - **Credentials**: Add whatever credentials are required by the Nodes,
 - **Settings**: Specify whatever settings are required by the workflow. Typically all required settings are placed in a "Set" Node at the start of the workflow following the Trigger Node.
 
-## n8n Workflows
-
-### Contents
+## Contents
 
 - [Nostr Simple Post](#nostr-simple-post)
 - [Nostr Push Notify if Mentioned](#nostr-push-notify-if-mentioned)
 - [Nostr Push Notify If Posts a Note](#nostr-push-notify-if-posts-a-note)
 - [Nostr AI Assistant](#nostr-ai-assistant)
 
-### Nostr Simple Post
+## Nostr Simple Post
 
 The "Nostr Form to Post a Note" workflow powers a Npub of your choosing, and allows you to delegate the ability to post notes from that Npub without needing to handover the private keys.
 
@@ -37,7 +35,7 @@ The workflow is designed to be a very simple example of Nostr, Nostrobots and n8
 - **To use**: Turn the workflow to Active. Give the URL, username, and password to the person you would like to post notes,
 - **To revoke access**: Change the form username and password, or deactivate the workflow.
 
-### Nostr Push Notify If Mentioned
+## Nostr Push Notify If Mentioned
 
 ![Screenshot of Nostr Push Notify if Mentioned v1.0 Workflow](Screenshots/Nostr-Push-Notify-If-Mentioned-v1-0-Workflow.png)
 
@@ -63,7 +61,7 @@ How it works–
 - **Set workflow variables in the Set Variables Node**: Pushover User Key, Nostr Relays, The Nostr eventID of your List,
 - **Go Live**: Turn workflow to Active.
 
-### Nostr Push Notify If Posts a Note
+## Nostr Push Notify If Posts a Note
 
 ![Screenshot of Nostr Push Notify if Posts a Note v1.0 Workflow](Screenshots/Nostr-Push-Notify-If-Posts-a-Note-v1-0-Workflow.png)
 
@@ -89,7 +87,7 @@ How it works–
 - **Set workflow variables in the Set Variables Node**: Pushover User Key, Nostr Relays, The Nostr eventID of your List,
 - **Go Live**: Turn workflow to Active.
 
-### Nostr AI Assistant
+## Nostr AI Assistant
 
 ![Screenshot of Nostr AI Assistant v1.0 Workflow](Screenshots/Nostr-AI-Assistant-v1-0-Workflow.png)
 
