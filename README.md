@@ -4,8 +4,6 @@ Nostr is a new protocol for adding a social layer to the Internet. n8n is a work
 
 My intent it to publish a variety of useful workflows.
 
-At this time there is one workflow which allows you to create your own Nostr AI Assistant.
-
 ## Prerequisites
 
 - **n8n**: Install a self-hosted n8n on your system. You can follow the instructions from the [n8n website](https://docs.n8n.io/hosting/),
