@@ -1,0 +1,448 @@
+{
+  "name": "Nostr Push Notify If Mentioned v1.0",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "4a05471c-a21b-4fe5-b1c2-159581be012d",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [-400, 1268.376604415295]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 10
+            }
+          ]
+        }
+      },
+      "id": "01ca6491-c7e5-467b-93a3-f7b5a7672594",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [-400, 1088.376604415295]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "402b5cc0-0a6c-457a-9389-e734bc7475b6",
+              "name": "ownerPushoverUserKey",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "09466e7e-dd38-4c48-9061-f6fec8c1f8cf",
+              "name": "relays",
+              "value": "wss://relay.damus.io,wss://relay.primal.net,wss://relay.nostr.band,wss://relay.nostrplebs.com,wss://nostr-01.yakihonne.com,wss://nostr-02.yakihonne.com",
+              "type": "string"
+            },
+            {
+              "id": "34161494-2029-422a-ba7b-fd1511f22623",
+              "name": "listEventID",
+              "value": "d8e0d6c5b30eac8d28db24c0474a74b02e963f246550641e74d46f473d8ab446",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a48c0ae1-7020-4fcf-b102-3d4ac340fa52",
+      "name": "Set Variables",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [-180, 1088.376604415295]
+    },
+    {
+      "parameters": {},
+      "id": "16df9fee-925c-4964-b168-41069d9e563c",
+      "name": "Wait",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [1660, 1228.376604415295],
+      "webhookId": "0fdc569d-7bb2-47eb-b534-7af03638047e"
+    },
+    {
+      "parameters": {},
+      "id": "a44b0bf1-5a12-4553-89ba-95758695ee08",
+      "name": "Loop Complete",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [1460, 1228.376604415295]
+    },
+    {
+      "parameters": {
+        "userKey": "={{ $('Set Variables').first().json.ownerPushoverUserKey }}",
+        "message": "={{ $('Is Mentioning Self?').item.json.content }}",
+        "priority": 0,
+        "additionalFields": {
+          "title": "=Mention on Nostr",
+          "url": "=nostr:{{ $json.nevent }}"
+        }
+      },
+      "id": "b90e366a-d315-488c-93c0-dcba76de4461",
+      "name": "Push Notify",
+      "type": "n8n-nodes-base.pushover",
+      "typeVersion": 1,
+      "position": [1660, 968.3766044152951]
+    },
+    {
+      "parameters": {},
+      "id": "bde7cfa6-2ca6-468a-956e-c44b6db2ee13",
+      "name": "Workflow Complete",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [1660, 1468.376604415295]
+    },
+    {
+      "parameters": {
+        "strategy": "mention",
+        "mention": "={{ $('Loop Over Pubkeys').item.json.pubkey }}",
+        "from": 10.1,
+        "unit": "minute",
+        "relay": "={{ $('Set Variables').item.json.relays }}"
+      },
+      "id": "a6a99d8e-8b14-42a1-8b93-9c19336e146a",
+      "name": "Read Mentions",
+      "type": "n8n-nodes-nostrobots.nostrobotsread",
+      "typeVersion": 1,
+      "position": [780, 1088.376604415295],
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "content": "## Nostr Push Notifications when Listed Users are Mentioned\n\nThis workflow sends a push notification in Pushover if any of the listed users are Mentioned on Nostr –\n\n- We define pubkeys in a Nostr List (kind:30000),\n- If a pubkey in that list is Mentioned in a Note,\n- We push a notification into Pushover,\n- We run this workflow periodically or if triggered.\n\n## Requirements\n\nTo use this workflow we need –\n\n- [Nostrobots Community Nodes](https://github.com/ocknamo/n8n-nodes-nostrobots/tree/main), by [Ocknamo](https://njump.me/npub1y6aja0kkc4fdvuxgqjcdv4fx0v7xv2epuqnddey2eyaxquznp9vq0tp75l), \n- A kind 30000 list of pubkeys published to the Nostr network (you can create and publish this with [listr.lol](https://listr.lol) or any other client that supports lists. (E.g. An example \"Notify If Mentioned\" list which you can view in [listr.lol](https://listr.lol/npub1r0d8u8mnj6769500nypnm28a9hpk9qg8jr0ehe30tygr3wuhcnvs4rfsft/30000/naddr1qvzqqqr4xqpzqx760c0h894a5tg7lxgr8k506twrv2qs0yxln0nz7kgs8zae03xeqy2hwumn8ghj7un9d3shjtnyv9kh2uewd9hj7qghwaehxw309aex2mrp0yhxummnw3ezucnpdejz7qghwaehxw309aex2mrp0yh8qunfd4skctnwv46z7qg4waehxw309aex2mrp0yhxgctdw4eju6t09uq3wamnwvaz7tmjv4kxz7fwdehhxarj9e3xzmny9uqz5mrfwd68ytfevf3r2vnyvsmz6ef389nz6dpnxd3z6cfcxajz6ct9xa3xyefcvgmrjerp4rqr8f) or [njump.me](https://njump.me/naddr1qvzqqqr4xqpzqx760c0h894a5tg7lxgr8k506twrv2qs0yxln0nz7kgs8zae03xeqy2hwumn8ghj7un9d3shjtnyv9kh2uewd9hj7qghwaehxw309aex2mrp0yhxummnw3ezucnpdejz7qghwaehxw309aex2mrp0yh8qunfd4skctnwv46z7qg4waehxw309aex2mrp0yhxgctdw4eju6t09uq3wamnwvaz7tmjv4kxz7fwdehhxarj9e3xzmny9uqz5mrfwd68ytfevf3r2vnyvsmz6ef389nz6dpnxd3z6cfcxajz6ct9xa3xyefcvgmrjerp4rqr8f)),\n- A [Pushover](https://pushover.net/) account with an Application for your Nostr notifications,\n- Credentials for N8N: Pushover Application Key,\n- Workflow variables set in the Set Variables Node: Pushover User Key, Relays, The Nostr eventID of your List.\n\n## In use\n\nEach time this workflow runs it queries your list of pubkeys to get the latest pubkeys that you have chosen, and then if any of those pubkeys have a valid mention it push notifies you that note. To adjust which pubkeys give you notifications, publish an update to your list of pubkeys or replace the list in your \"Set Variables\" note with a new list. \n",
+        "height": 996.4525538018894,
+        "width": 883.2552128537732,
+        "color": 6
+      },
+      "id": "6e0afc6c-cd5f-4218-adc7-703244db1ff6",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-460, 460.5185345900602]
+    },
+    {
+      "parameters": {
+        "content": "## Check Each Pubkey for a Valid Mention and Notify if Found\n\nFor each pubkey we run the loop, \n\n- read all mentions of that pubkey, \n- check if mentions exist,\n- check if the mention is the pubkey mentioning itself, exclude those,\n- create a useful nevent link for use with nostr: prefix,\n- push notify the event text with a nostr: link to the nevent. \n- pause between iterations so as not to hit relay rate-limits.",
+        "height": 849.9316651956813,
+        "width": 1429.162030150696
+      },
+      "id": "68a73351-653d-4bbb-a62c-68d21e73bf5c",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [460, 814.2145529742161]
+    },
+    {
+      "parameters": {
+        "convertOutput": "nevent",
+        "event": "={\n  \"id\": \"{{ $json.id }}\",\n  \"pubkey\": \"{{ $json.pubkey }}\",\n  \"created_at\": {{ $json.created_at }},\n  \"content\": \"\"\n}",
+        "relayhints": "={{ $('Set Variables').first().json.relays }}"
+      },
+      "id": "c47ca03f-3ed1-46d5-ad15-c70320cc2629",
+      "name": "Transform ID to Nevent",
+      "type": "n8n-nodes-nostrobots.nostrobotsutils",
+      "typeVersion": 1,
+      "position": [1460, 968.3766044152951]
+    },
+    {
+      "parameters": {
+        "strategy": "eventid",
+        "eventid": "={{ $json.listEventID }}",
+        "relay": "={{ $json.relays }}"
+      },
+      "id": "aa719b5d-07aa-421e-8a89-8b46dd1233e8",
+      "name": "Get Pubkeys from List",
+      "type": "n8n-nodes-nostrobots.nostrobotsread",
+      "typeVersion": 1,
+      "position": [40, 1088.376604415295],
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "jsCode": "return $json.tags\n    .filter(tag => tag[0] === \"p\")\n    .map(tag => {\n        return { pubkey: tag[1] };\n    });"
+      },
+      "id": "cab9ed5d-9e74-4e76-add7-5eb6796e086b",
+      "name": "Split Out Pubkeys",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [260, 1088.376604415295]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "a158b890-a6d5-41f0-b362-3751094db841",
+      "name": "Loop Over Pubkeys",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [540, 1088.376604415295]
+    },
+    {
+      "parameters": {
+        "content": "## Initial Pushover Setup\n\n1. In Pushover register an Account, add your devices (e.g. your phone), and set up an Application (e.g. \"Nostr Notifications\"),\n2. Add the Pushover Application Key to your n8n Credentials,\n3. Add the Pushover User Key to the Set Variables Node at the Startup of the Workflow,\n4. You can configure the Application can have an icon and you can use this one – \n\n![Nostr Icon](https://pushover.net/icons/b5vpp7tytjiw5k8.png)",
+        "height": 321.8380138744974,
+        "width": 615.8801950827736,
+        "color": 5
+      },
+      "id": "5a76456f-7d61-4e37-818f-dc6f7cca52a2",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [460, 460]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "ab21427e-edd7-4069-8433-2073515b8c0f",
+              "leftValue": "={{ $json.pubkey }}",
+              "rightValue": "={{ $('Loop Over Pubkeys').item.json.pubkey }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "74309c5b-5059-41b8-9a11-971cc8873f32",
+      "name": "Is Mentioning Self?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [1220, 1088.376604415295]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "357acad2-ae69-4f8c-81a9-524c822ae8c4",
+              "leftValue": "={{$json}}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "373f65c3-2c1a-4818-9f23-7a3f580aff69",
+      "name": "Do Mentions Exist?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [1000, 1088.376604415295]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Set Variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set Variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Pubkeys",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Complete": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Push Notify": {
+      "main": [
+        [
+          {
+            "node": "Loop Complete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Mentions": {
+      "main": [
+        [
+          {
+            "node": "Do Mentions Exist?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform ID to Nevent": {
+      "main": [
+        [
+          {
+            "node": "Push Notify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Variables": {
+      "main": [
+        [
+          {
+            "node": "Get Pubkeys from List",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Pubkeys from List": {
+      "main": [
+        [
+          {
+            "node": "Split Out Pubkeys",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out Pubkeys": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Pubkeys",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Pubkeys": {
+      "main": [
+        [
+          {
+            "node": "Workflow Complete",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Read Mentions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Mentioning Self?": {
+      "main": [
+        [
+          {
+            "node": "Loop Complete",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Transform ID to Nevent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Do Mentions Exist?": {
+      "main": [
+        [
+          {
+            "node": "Is Mentioning Self?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Complete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "84412870-cfe6-4d76-a48a-43d72cc5130a",
+  "meta": {
+    "instanceId": "ccba4d051fa49b8de562911d1fd956f10bf11fa96365b82f0a8ade5091902b75"
+  },
+  "id": "73xRqaR7aWhHZGEq",
+  "tags": [
+    {
+      "createdAt": "2024-11-18T23:52:11.671Z",
+      "updatedAt": "2024-11-18T23:52:11.671Z",
+      "id": "y4Fxchl80CmW2UNH",
+      "name": "Nostr"
+    }
+  ]
+}

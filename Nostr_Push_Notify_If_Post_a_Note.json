@@ -1,0 +1,370 @@
+{
+  "name": "Nostr Push Notify If Post a Note v1.0",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "6952f986-af62-40c2-b08d-5846552fe0c4",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        1285.508320554659
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 10
+            }
+          ]
+        }
+      },
+      "id": "ec4f35ab-518a-4270-ae53-0406daf29b6f",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -400,
+        1105.508320554659
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "402b5cc0-0a6c-457a-9389-e734bc7475b6",
+              "name": "ownerPushoverUserKey",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "09466e7e-dd38-4c48-9061-f6fec8c1f8cf",
+              "name": "relays",
+              "value": "wss://relay.damus.io,wss://relay.primal.net,wss://relay.nostr.band,wss://relay.nostrplebs.com,wss://nostr-01.yakihonne.com,wss://nostr-02.yakihonne.com",
+              "type": "string"
+            },
+            {
+              "id": "34161494-2029-422a-ba7b-fd1511f22623",
+              "name": "listEventID",
+              "value": "8720fa102ae7dfc544b61630ede8934f4e8320f8573acf57721c000a4b03eb4f",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3053da64-12b8-4c47-b624-b619a8fb4ae7",
+      "name": "Set Variables",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -180,
+        1105.508320554659
+      ]
+    },
+    {
+      "parameters": {
+        "userKey": "={{ $('Set Variables').first().json.ownerPushoverUserKey }}",
+        "message": "={{ $('Do Posts Exist?').item.json.content }}",
+        "priority": 0,
+        "additionalFields": {
+          "title": "=Posted Note on Nostr",
+          "url": "=nostr:{{ $json.nevent }}"
+        }
+      },
+      "id": "f40b43eb-8ae3-4fef-8676-307e89ea4279",
+      "name": "Push Notify",
+      "type": "n8n-nodes-base.pushover",
+      "typeVersion": 1,
+      "position": [
+        1180,
+        1105.508320554659
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "e01ea5ad-ad28-4f21-b745-289de04e7630",
+      "name": "Workflow Complete",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1400,
+        1305.508320554659
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Nostr Push Notifications when Listed Users Post a Note\n\nThis workflow sends a push notification in Pushover if any of the listed accounts Post a Note on Nostr –\n\n- We define pubkeys in a Nostr List (kind:30000),\n- If a pubkey in that list Posts a Note,\n- We push a notification into Pushover,\n- We run this workflow periodically or if triggered.\n\n## Requirements\n\nTo use this workflow we need –\n\n- [Nostrobots Community Nodes](https://github.com/ocknamo/n8n-nodes-nostrobots/tree/main) by [Ocknamo](https://njump.me/npub1y6aja0kkc4fdvuxgqjcdv4fx0v7xv2epuqnddey2eyaxquznp9vq0tp75l), \n- A kind 30000 list of pubkeys published to the Nostr network (you can create and publish this with [listr.lol](https://listr.lol) or any other client that supports lists. E.g. An example \"Notify If Posts a Note\" list which you can view in [listr.lol](https://listr.lol/npub1r0d8u8mnj6769500nypnm28a9hpk9qg8jr0ehe30tygr3wuhcnvs4rfsft/30000/naddr1qvzqqqr4xqpzqx760c0h894a5tg7lxgr8k506twrv2qs0yxln0nz7kgs8zae03xeqq4xc6tnw3ez6dfsx5mnvefsvyknjwfsxvkngcmxx5kkyv3cv5kkgetyv5urzvnyv43nydcnxt288) or [njump.me](https://njump.me/naddr1qvzqqqr4xqpzqx760c0h894a5tg7lxgr8k506twrv2qs0yxln0nz7kgs8zae03xeqythwumn8ghj7un9d3shjtnswf5k6ctv9ehx2ap0qythwumn8ghj7un9d3shjtnwdaehgu3wvfskuep0qyghwumn8ghj7mn0wd68ytnhd9hx2tcpzemhxue69uhkummnw3ex2mrfw3jhxtn0wfnj7qg4waehxw309aex2mrp0yhxgctdw4eju6t09uqz5mrfwd68ytf4xq6nwdn9xpsj6wfexqej6drrvc6j6c3j8pjj6er9v3jnsvfjv3jkxv3h7a4evr)),\n- A [Pushover](https://pushover.net/) account with an Application for your Nostr notifications,\n- Credentials for N8N: Pushover Application Key,\n- Workflow variables set in the Set Variables Node: Pushover User Key, Relays, The Nostr eventID of your List.\n\n## In use\n\nEach time this workflow runs it queries your list of pubkeys to get the latest pubkeys that you have chosen, and then if any of those pubkeys have posted a note it push notifies you that note. To adjust which pubkeys give you notifications, publish an update to your list of pubkeys or replace the list in your \"Set Variables\" note with a new list. \n",
+        "height": 1013.813350413508,
+        "width": 883.2552128537732,
+        "color": 6
+      },
+      "id": "9ee03434-86c3-4a06-9d79-0d3e238aa7e8",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -460,
+        460.28945411780524
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Check All Pubkeys for All Posts and Notify if Found\n \n\n- read all posts of all pubkeys, \n- check if posts exist,\n- create a useful nevent link for use with nostr: prefix,\n- push notify the event text with a nostr: link to the nevent.",
+        "height": 643.5301596929639,
+        "width": 1132.5940000559713
+      },
+      "id": "19519ae1-69dc-499d-abd3-939bdc52080c",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        460,
+        831.3462691135798
+      ]
+    },
+    {
+      "parameters": {
+        "convertOutput": "nevent",
+        "event": "={\n  \"id\": \"{{ $json.id }}\",\n  \"pubkey\": \"{{ $json.pubkey }}\",\n  \"created_at\": {{ $json.created_at }},\n  \"content\": \"\"\n}",
+        "relayhints": "={{ $('Set Variables').first().json.relays }}"
+      },
+      "id": "18d6c4d6-82db-4969-8ced-73a0c0c6ae90",
+      "name": "Transform ID to Nevent",
+      "type": "n8n-nodes-nostrobots.nostrobotsutils",
+      "typeVersion": 1,
+      "position": [
+        980,
+        1105.508320554659
+      ]
+    },
+    {
+      "parameters": {
+        "strategy": "eventid",
+        "eventid": "={{ $json.listEventID }}",
+        "relay": "={{ $json.relays }}"
+      },
+      "id": "2aa41a6e-4791-49f1-a31b-9ac2bf448d65",
+      "name": "Get Pubkeys from List",
+      "type": "n8n-nodes-nostrobots.nostrobotsread",
+      "typeVersion": 1,
+      "position": [
+        40,
+        1105.508320554659
+      ],
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "jsCode": "return $json.tags\n    .filter(tag => tag[0] === \"p\")\n    .map(tag => {\n        return { pubkey: tag[1] };\n    });"
+      },
+      "id": "c470959d-f900-4695-92bd-a60eb58c0dcc",
+      "name": "Split Out Pubkeys",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        260,
+        1105.508320554659
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Initial Pushover Setup\n\n1. In Pushover register an Account, add your devices (e.g. your phone), and set up an Application (e.g. \"Nostr Notifications\"),\n2. Add the Pushover Application Key to your n8n Credentials,\n3. Add the Pushover User Key to the Set Variables Node at the Startup of the Workflow,\n4. You can configure the Application can have an icon and you can use this one – \n\n![Nostr Icon](https://pushover.net/icons/b5vpp7tytjiw5k8.png)",
+        "height": 338.96973001386107,
+        "width": 615.8801950827736,
+        "color": 5
+      },
+      "id": "ddcb28df-fe6f-4c76-8384-7db66b851ae6",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        460,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "pubkey": "={{ $json.pubkey }}",
+        "from": 10.1,
+        "unit": "minute",
+        "relay": "={{ $('Set Variables').item.json.relays }}"
+      },
+      "id": "fd5a930d-b5f7-40c1-9133-ec6234132143",
+      "name": "Read Posts",
+      "type": "n8n-nodes-nostrobots.nostrobotsread",
+      "typeVersion": 1,
+      "position": [
+        520,
+        1105.508320554659
+      ],
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "357acad2-ae69-4f8c-81a9-524c822ae8c4",
+              "leftValue": "={{$json}}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "b5cbb649-3c5e-40a8-95e1-0823450c7d07",
+      "name": "Do Posts Exist?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        740,
+        1105.508320554659
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Set Variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set Variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Push Notify": {
+      "main": [
+        [
+          {
+            "node": "Workflow Complete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Variables": {
+      "main": [
+        [
+          {
+            "node": "Get Pubkeys from List",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Pubkeys from List": {
+      "main": [
+        [
+          {
+            "node": "Split Out Pubkeys",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out Pubkeys": {
+      "main": [
+        [
+          {
+            "node": "Read Posts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Posts": {
+      "main": [
+        [
+          {
+            "node": "Do Posts Exist?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Do Posts Exist?": {
+      "main": [
+        [
+          {
+            "node": "Transform ID to Nevent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Workflow Complete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform ID to Nevent": {
+      "main": [
+        [
+          {
+            "node": "Push Notify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "e04c980f-4542-4882-b999-7827fb713a0b",
+  "meta": {
+    "instanceId": "ccba4d051fa49b8de562911d1fd956f10bf11fa96365b82f0a8ade5091902b75"
+  },
+  "id": "trTzZiIPRKspW5qc",
+  "tags": [
+    {
+      "createdAt": "2024-11-18T23:52:11.671Z",
+      "updatedAt": "2024-11-18T23:52:11.671Z",
+      "id": "y4Fxchl80CmW2UNH",
+      "name": "Nostr"
+    }
+  ]
+}
