@@ -1,9 +1,9 @@
 {
-  "name": "Nostr Push Notify If Mentioned v1.0",
+  "name": "Nostr Push Notify If Mentioned v1.1",
   "nodes": [
     {
       "parameters": {},
-      "id": "4a05471c-a21b-4fe5-b1c2-159581be012d",
+      "id": "370dee54-b804-4791-963b-333656c0014e",
       "name": "When clicking ‘Test workflow’",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -20,7 +20,7 @@
           ]
         }
       },
-      "id": "01ca6491-c7e5-467b-93a3-f7b5a7672594",
+      "id": "795c3654-7c83-4a66-b562-d3600f74be2d",
       "name": "Schedule Trigger",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
@@ -39,7 +39,7 @@
             {
               "id": "09466e7e-dd38-4c48-9061-f6fec8c1f8cf",
               "name": "relays",
-              "value": "wss://relay.damus.io,wss://relay.primal.net,wss://relay.nostr.band,wss://relay.nostrplebs.com,wss://nostr-01.yakihonne.com,wss://nostr-02.yakihonne.com",
+              "value": "wss://relay.damus.io, wss://nostrelites.org, wss://relay.nostr.band",
               "type": "string"
             },
             {
@@ -52,7 +52,7 @@
         },
         "options": {}
       },
-      "id": "a48c0ae1-7020-4fcf-b102-3d4ac340fa52",
+      "id": "834a05e2-c9bf-4f86-8da6-7433e60cddde",
       "name": "Set Variables",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -60,20 +60,20 @@
     },
     {
       "parameters": {},
-      "id": "16df9fee-925c-4964-b168-41069d9e563c",
+      "id": "962c683b-c7d6-4dcd-a642-59dc6dfff301",
       "name": "Wait",
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
-      "position": [1660, 1228.376604415295],
-      "webhookId": "0fdc569d-7bb2-47eb-b534-7af03638047e"
+      "position": [2580, 1348.376604415295],
+      "webhookId": "1ec0052d-dda2-4844-b122-4bfc9f243674"
     },
     {
       "parameters": {},
-      "id": "a44b0bf1-5a12-4553-89ba-95758695ee08",
+      "id": "bb8a2acb-ad8a-4c13-a0b9-f5f1008775e4",
       "name": "Loop Complete",
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
-      "position": [1460, 1228.376604415295]
+      "position": [2360, 1348.376604415295]
     },
     {
       "parameters": {
@@ -81,37 +81,37 @@
         "message": "={{ $('Is Mentioning Self?').item.json.content }}",
         "priority": 0,
         "additionalFields": {
-          "title": "=Mention on Nostr",
+          "title": "=Mention for {{ $('Merge').item.json.displayName }}",
           "url": "=nostr:{{ $json.nevent }}"
         }
       },
-      "id": "b90e366a-d315-488c-93c0-dcba76de4461",
+      "id": "b88ec484-539d-49e1-9de5-f652a681b25c",
       "name": "Push Notify",
       "type": "n8n-nodes-base.pushover",
       "typeVersion": 1,
-      "position": [1660, 968.3766044152951]
+      "position": [2580, 1088.376604415295]
     },
     {
       "parameters": {},
-      "id": "bde7cfa6-2ca6-468a-956e-c44b6db2ee13",
+      "id": "8334ceab-db61-43a9-96d5-43daf39b0434",
       "name": "Workflow Complete",
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
-      "position": [1660, 1468.376604415295]
+      "position": [2580, 1588.376604415295]
     },
     {
       "parameters": {
         "strategy": "mention",
-        "mention": "={{ $('Loop Over Pubkeys').item.json.pubkey }}",
+        "mention": "={{ $('Merge').item.json.pubkey }}",
         "from": 10.1,
         "unit": "minute",
-        "relay": "={{ $('Set Variables').item.json.relays }}"
+        "relay": "={{ $('Set Variables').first().json.relays }}"
       },
-      "id": "a6a99d8e-8b14-42a1-8b93-9c19336e146a",
+      "id": "94fafee4-72f4-4269-8e46-f952920440a4",
       "name": "Read Mentions",
       "type": "n8n-nodes-nostrobots.nostrobotsread",
       "typeVersion": 1,
-      "position": [780, 1088.376604415295],
+      "position": [1680, 1088.376604415295],
       "alwaysOutputData": true,
       "onError": "continueRegularOutput"
     },
@@ -122,7 +122,7 @@
         "width": 883.2552128537732,
         "color": 6
       },
-      "id": "6e0afc6c-cd5f-4218-adc7-703244db1ff6",
+      "id": "2dc05a5c-04dd-402d-9e0b-9185a1bebbf7",
       "name": "Sticky Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -131,10 +131,10 @@
     {
       "parameters": {
         "content": "## Check Each Pubkey for a Valid Mention and Notify if Found\n\nFor each pubkey we run the loop, \n\n- read all mentions of that pubkey, \n- check if mentions exist,\n- check if the mention is the pubkey mentioning itself, exclude those,\n- create a useful nevent link for use with nostr: prefix,\n- push notify the event text with a nostr: link to the nevent. \n- pause between iterations so as not to hit relay rate-limits.",
-        "height": 849.9316651956813,
-        "width": 1429.162030150696
+        "height": 947.8540203558861,
+        "width": 2310.4632265925343
       },
-      "id": "68a73351-653d-4bbb-a62c-68d21e73bf5c",
+      "id": "560a1b74-7eda-41e8-af79-69bf829bb126",
       "name": "Sticky Note1",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -146,11 +146,11 @@
         "event": "={\n  \"id\": \"{{ $json.id }}\",\n  \"pubkey\": \"{{ $json.pubkey }}\",\n  \"created_at\": {{ $json.created_at }},\n  \"content\": \"\"\n}",
         "relayhints": "={{ $('Set Variables').first().json.relays }}"
       },
-      "id": "c47ca03f-3ed1-46d5-ad15-c70320cc2629",
+      "id": "58ac72da-d940-4c36-995d-27689997f2db",
       "name": "Transform ID to Nevent",
       "type": "n8n-nodes-nostrobots.nostrobotsutils",
       "typeVersion": 1,
-      "position": [1460, 968.3766044152951]
+      "position": [2360, 1088.376604415295]
     },
     {
       "parameters": {
@@ -158,7 +158,7 @@
         "eventid": "={{ $json.listEventID }}",
         "relay": "={{ $json.relays }}"
       },
-      "id": "aa719b5d-07aa-421e-8a89-8b46dd1233e8",
+      "id": "25cd1b93-e549-4e72-bba1-c2b0a0adfa65",
       "name": "Get Pubkeys from List",
       "type": "n8n-nodes-nostrobots.nostrobotsread",
       "typeVersion": 1,
@@ -169,7 +169,7 @@
       "parameters": {
         "jsCode": "return $json.tags\n    .filter(tag => tag[0] === \"p\")\n    .map(tag => {\n        return { pubkey: tag[1] };\n    });"
       },
-      "id": "cab9ed5d-9e74-4e76-add7-5eb6796e086b",
+      "id": "337a7626-6dce-4ee6-a1c1-048a90a939e6",
       "name": "Split Out Pubkeys",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -179,7 +179,7 @@
       "parameters": {
         "options": {}
       },
-      "id": "a158b890-a6d5-41f0-b362-3751094db841",
+      "id": "922452a8-c75f-4e8e-a0da-7b50db84321f",
       "name": "Loop Over Pubkeys",
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
@@ -192,7 +192,7 @@
         "width": 615.8801950827736,
         "color": 5
       },
-      "id": "5a76456f-7d61-4e37-818f-dc6f7cca52a2",
+      "id": "f1ddf391-a4c1-4cca-91ec-f7abbd283c32",
       "name": "Sticky Note2",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -211,7 +211,7 @@
             {
               "id": "ab21427e-edd7-4069-8433-2073515b8c0f",
               "leftValue": "={{ $json.pubkey }}",
-              "rightValue": "={{ $('Loop Over Pubkeys').item.json.pubkey }}",
+              "rightValue": "={{ $('Merge').item.json.pubkey }}",
               "operator": {
                 "type": "string",
                 "operation": "equals",
@@ -223,11 +223,11 @@
         },
         "options": {}
       },
-      "id": "74309c5b-5059-41b8-9a11-971cc8873f32",
+      "id": "b246aff6-8ccb-45a0-ac94-a61148b3e90b",
       "name": "Is Mentioning Self?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
-      "position": [1220, 1088.376604415295]
+      "position": [2120, 1088.376604415295]
     },
     {
       "parameters": {
@@ -254,11 +254,70 @@
         },
         "options": {}
       },
-      "id": "373f65c3-2c1a-4818-9f23-7a3f580aff69",
+      "id": "9e5ce228-3fbf-413d-a6d9-c017ff051456",
       "name": "Do Mentions Exist?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
-      "position": [1000, 1088.376604415295]
+      "position": [1900, 1088.376604415295]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1fedf404-a4f7-46e7-ae62-07e2aad72b4f",
+              "name": "displayName",
+              "value": "={{ JSON.parse($json[\"content\"]).display_name || JSON.parse($json[\"content\"]).name }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "include": "selected",
+        "includeFields": "displayName, pubkey",
+        "options": {}
+      },
+      "id": "d2ee724c-e21c-489c-87dd-383aeffc186a",
+      "name": "Extract displayName",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [1220, 1288.376604415295]
+    },
+    {
+      "parameters": {
+        "strategy": "rawFilter",
+        "rawFilter": "={\n  \"kinds\":[0],\n  \"authors\":[\"{{ $json.pubkey }}\"]\n} ",
+        "from": 365,
+        "relay": "=wss://purplepag.es,{{ $('Set Variables').first().json.relays }}"
+      },
+      "id": "f7840008-07c7-46a4-a510-adc58be3c6f5",
+      "name": "Read Profiles",
+      "type": "n8n-nodes-nostrobots.nostrobotsread",
+      "typeVersion": 1,
+      "position": [780, 1288.376604415295]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Input: Array of events\nconst events = items.map(item => item.json);\n\n// Group events by pubkey and select the latest event for each pubkey\nconst latestEvents = Object.values(\n  events.reduce((acc, event) => {\n    const pubkey = event.pubkey;\n    if (!acc[pubkey] || acc[pubkey].created_at < event.created_at) {\n      acc[pubkey] = event;\n    }\n    return acc;\n  }, {})\n);\n\n// Convert the latest events into the n8n output format\nreturn latestEvents.map(event => ({ json: event }));\n"
+      },
+      "id": "06e70bfe-fb33-4803-9927-73ca96242913",
+      "name": "Filter Latest",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1000, 1288.376604415295]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "pubkey",
+        "joinMode": "enrichInput1",
+        "options": {}
+      },
+      "id": "8b24b5a3-747b-400d-ad5e-fb6697d90c25",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [1440, 1088.376604415295]
     }
   ],
   "pinData": {},
@@ -329,17 +388,6 @@
         ]
       ]
     },
-    "Transform ID to Nevent": {
-      "main": [
-        [
-          {
-            "node": "Push Notify",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Set Variables": {
       "main": [
         [
@@ -384,7 +432,12 @@
         ],
         [
           {
-            "node": "Read Mentions",
+            "node": "Read Profiles",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
             "type": "main",
             "index": 0
           }
@@ -426,23 +479,71 @@
           }
         ]
       ]
+    },
+    "Extract displayName": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Read Profiles": {
+      "main": [
+        [
+          {
+            "node": "Filter Latest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Latest": {
+      "main": [
+        [
+          {
+            "node": "Extract displayName",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform ID to Nevent": {
+      "main": [
+        [
+          {
+            "node": "Push Notify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Read Mentions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "84412870-cfe6-4d76-a48a-43d72cc5130a",
+  "versionId": "495ca247-5d29-4fc5-b215-1a4404c9009a",
   "meta": {
     "instanceId": "ccba4d051fa49b8de562911d1fd956f10bf11fa96365b82f0a8ade5091902b75"
   },
-  "id": "73xRqaR7aWhHZGEq",
-  "tags": [
-    {
-      "createdAt": "2024-11-18T23:52:11.671Z",
-      "updatedAt": "2024-11-18T23:52:11.671Z",
-      "id": "y4Fxchl80CmW2UNH",
-      "name": "Nostr"
-    }
-  ]
+  "id": "uV4ziWmkXwrGAJaF",
+  "tags": []
 }

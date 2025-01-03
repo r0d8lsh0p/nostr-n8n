@@ -37,7 +37,7 @@ The workflow is designed to be a very simple example of Nostr, Nostrobots and n8
 
 ## Nostr Push Notify If Mentioned
 
-![Screenshot of Nostr Push Notify if Mentioned v1.0 Workflow](Screenshots/Nostr-Push-Notify-If-Mentioned-v1-0-Workflow.png)
+![Screenshot of Nostr Push Notify if Mentioned v1.0 Workflow](Screenshots/Nostr-Push-Notify-If-Mentioned-v1-1-Workflow.png)
 
 The "Nostr Push Notify If Mentioned" workflow sends a push notification in Pushover if any of the listed accounts are Mentioned on Nostr.
 
@@ -63,7 +63,7 @@ How it works–
 
 ## Nostr Push Notify If Posts a Note
 
-![Screenshot of Nostr Push Notify if Posts a Note v1.0 Workflow](Screenshots/Nostr-Push-Notify-If-Posts-a-Note-v1-0-Workflow.png)
+![Screenshot of Nostr Push Notify if Posts a Note v1.0 Workflow](Screenshots/Nostr-Push-Notify-If-Posts-a-Note-v1-1-Workflow.png)
 
 The "Nostr Push Notify If Posts a Note" workflow sends a push notification in Pushover if any of the listed accounts Post a Note on Nostr.
 
