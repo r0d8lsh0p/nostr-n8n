@@ -119,10 +119,11 @@ This workflow triggers your AI Assistant to respond to Notes on Nostr, if–
 - Further enhancements to Nostr AI Assistant workflow,
 - Further Nostr n8n workflows.
 
-## Nostr Profiles
+## Nostr Links
 
-- Contact me [npub1r0d8u8mnj6769500nypnm28a9hpk9qg8jr0ehe30tygr3wuhcnvs4rfsft](http://iris.to/npub1r0d8u8mnj6769500nypnm28a9hpk9qg8jr0ehe30tygr3wuhcnvs4rfsft),
+- Contact me [npub1r0d8u8mnj6769500nypnm28a9hpk9qg8jr0ehe30tygr3wuhcnvs4rfsft](https://njump.me/npub1r0d8u8mnj6769500nypnm28a9hpk9qg8jr0ehe30tygr3wuhcnvs4rfsft),
 - See an example "Jonny (AI Assistant)" live [npub1ahjpx53ewavp23g5zj9jgyfrpr8djmgjzg5mpe4xd0z69dqvq0kq2lf353](https://iris.to/npub1ahjpx53ewavp23g5zj9jgyfrpr8djmgjzg5mpe4xd0z69dqvq0kq2lf353/replies).
+- Read blog on [Workflow Automation for Nostr](https://njump.me/naddr1qvzqqqr4gupzqx760c0h894a5tg7lxgr8k506twrv2qs0yxln0nz7kgs8zae03xeqqyrge3svfskvenyp9vgvd)
 
 ## License
 
