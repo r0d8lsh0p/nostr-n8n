@@ -87,6 +87,25 @@ How it works–
 - **Set workflow variables in the Set Variables Node**: Pushover User Key, Nostr Relays, The Nostr eventID of your List,
 - **Go Live**: Turn workflow to Active.
 
+## Nostr Auto-React on Hashtag
+
+![Screenshot of Nostr AI Assistant v1.0 Workflow](Screenshots/Nostr-Auto-React-on-Hashtag-v1-0-Workflow.png)
+
+The "Nostr Auto-React on Hashtag" worklfow powers a Npub of your choice to automatically react with an emoji to any note containing the specified #hashtag.
+
+How it works–
+
+- We define the hashtag and the emoji,
+- If a note is posted with the hashtag,
+- We react with the emoji,
+- We run this workflow periodically.
+
+### Set up Nostr Auto-React on Hashtag
+
+- **Prerequisites**: Complete the prerequisites as above to have a working n8n instance with Nostrobots Community Nodes installed,
+- **Add credentials for n8n**: Nostr private key
+- **Set workflow variables in the Set Variables Node**: Hashtag to reactTo, Emoji to reactWith, Relay
+
 ## Nostr AI Assistant
 
 ![Screenshot of Nostr AI Assistant v1.0 Workflow](Screenshots/Nostr-AI-Assistant-v1-0-Workflow.png)

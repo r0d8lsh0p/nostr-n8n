@@ -1,0 +1,250 @@
+{
+  "name": "Nostr Auto-React on Hashtag v1.0",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 3
+            }
+          ]
+        }
+      },
+      "id": "f25c4103-52a7-4ec6-aa45-a6542b7657ec",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        509.18918918918916,
+        943.8513513513511
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "07c0f3a5-9dbe-4476-9e3d-5a24eec407c1",
+              "name": "reactTo",
+              "value": "#introductions",
+              "type": "string"
+            },
+            {
+              "id": "64b6d800-2d2f-42ec-90f1-529a77117ce1",
+              "name": "reactWith",
+              "value": "👋",
+              "type": "string"
+            },
+            {
+              "id": "95ef567f-2d47-4a8e-9984-917c7d330c2d",
+              "name": "relays",
+              "value": "wss://relay.damus.io, wss://relay.primal.net",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d2e32f95-ed55-4815-9eaf-5013683b9f3e",
+      "name": "Set Variables",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        729.1891891891892,
+        943.8513513513511
+      ]
+    },
+    {
+      "parameters": {
+        "amount": "={{ Math.floor(Math.random() * 10) + 5 }}",
+        "unit": "minutes"
+      },
+      "id": "8d38d17c-663c-4aec-ab12-18d7005f3266",
+      "name": "Wait",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1609.1891891891892,
+        1043.8513513513512
+      ],
+      "webhookId": "e667cd77-bafd-4020-a97b-6656ffe7446e"
+    },
+    {
+      "parameters": {},
+      "id": "a0c83079-8e08-4860-92e8-c5717ecf1a00",
+      "name": "Workflow Complete",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1609.1891891891892,
+        843.8513513513511
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "e351789b-8e1c-47bf-b68b-96a0c1658b16",
+      "name": "Loop Over Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1169.1891891891892,
+        943.8513513513511
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "event",
+        "content": "={{ $('Set Variables').item.json.reactWith }}",
+        "kind": 7,
+        "tags": "=[\n  [\"e\", \"{{ $json.id }}\"],\n  [\"p\", \"{{ $json.pubkey }}\"]\n]",
+        "relay": "={{ $('Set Variables').item.json.relays }}"
+      },
+      "id": "ebe34cfd-07ad-4f16-8aeb-a0fc963bfdb7",
+      "name": "Write Reaction",
+      "type": "n8n-nodes-nostrobots.nostrobots",
+      "typeVersion": 1,
+      "position": [
+        1389.1891891891892,
+        1043.8513513513512
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Nostr Auto-React on Hashtag \n\nThis workflow reacts with an emoji to any note containing the specified #hashtag.\n\n- We define the hashtag and the emoji\n- If a note is posted with the hashtag\n- We react with the emoji\n- We run this workflow periodically\n\n## Requirements\n\nTo use this workflow we need –\n\n- [Nostrobots Community Nodes](https://github.com/ocknamo/n8n-nodes-nostrobots/tree/main) by [Ocknamo](https://njump.me/npub1y6aja0kkc4fdvuxgqjcdv4fx0v7xv2epuqnddey2eyaxquznp9vq0tp75l), \n- Credentials for n8n: Nostr private key\n- Workflow variables set in the Set Variables Node: Hashtag to reactTo, Emoji to reactWith, Relays\n",
+        "height": 689.5270270270266,
+        "width": 408.8513513513511,
+        "color": 6
+      },
+      "id": "8a09fa15-a5a6-4f36-9cf1-0a88cac32cd2",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        460,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "strategy": "hashtag",
+        "hashtag": "={{ $('Set Variables').item.json.reactTo }}",
+        "from": 3,
+        "unit": "hour",
+        "relay": "={{ $('Set Variables').item.json.relays }}"
+      },
+      "id": "8457297c-d193-4848-ab48-558502547331",
+      "name": "Read #Hashtag",
+      "type": "n8n-nodes-nostrobots.nostrobotsread",
+      "typeVersion": 1,
+      "position": [
+        949.1891891891892,
+        943.8513513513511
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Read Hashtag and React \n\n- Read all notes with the hashtag\n- Loop for each note\n- Write the reaction\n- Pause for a random interval between 5 to 15 minutes (to prevent rate limiting, and appear less spammy)\n\n### Please use this workflow considerately.",
+        "height": 650.4729729729725,
+        "width": 932.6351351351348
+      },
+      "id": "c60d0bb4-fa40-4144-b8db-363504f635a8",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        889.1891891891892,
+        621.6216216216217
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set Variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Variables": {
+      "main": [
+        [
+          {
+            "node": "Read #Hashtag",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Workflow Complete",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Write Reaction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write Reaction": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read #Hashtag": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "3e6660db-ba3f-4a65-9848-0cbe7cb31864",
+  "meta": {
+    "instanceId": "ccba4d051fa49b8de562911d1fd956f10bf11fa96365b82f0a8ade5091902b75"
+  },
+  "id": "1ze0NzZBNBTcgNyV",
+  "tags": []
+}
