@@ -17,7 +17,7 @@ My intent it to publish a variety of useful workflows.
 - [Nostr Form to Post a Note](#nostr-form-to-post-a-note)
 - [Nostr Push Notify if Mentioned](#nostr-push-notify-if-mentioned)
 - [Nostr Push Notify If Posts a Note](#nostr-push-notify-if-posts-a-note)
-- [Nostr Auto-React on Hashtag](#nostr-auto-react-on-hashtag),
+- [Nostr Auto-React on Hashtag](#nostr-auto-react-on-hashtag)
 - [Nostr AI Assistant](#nostr-ai-assistant)
 
 ## Nostr Form to Post a Note
