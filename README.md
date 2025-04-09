@@ -88,6 +88,32 @@ How it works–
 - **Set workflow variables in the Set Variables Node**: Pushover User Key, Nostr Relays, The Nostr eventID of your List,
 - **Go Live**: Turn workflow to Active.
 
+## Nostr Push Notify If Starts a Stream
+
+![Screenshot of Nostr Push Notify if Starts a Stream v1.0 Workflow](Screenshots/Nostr-Push-Notify-If-Starts-a-Stream-v1-0-Workflow.png)
+
+The "Nostr Push Notify If Starts a Stream" workflow sends a push notification in Pushover if any of your follows start a live stream event.
+
+You can use this to make sure you never miss a live event from your follows. You can receive push notifications on as many accounts as you like, and push them to all of your devices.
+
+Pushover requires a small one-time payment per device you register, and has a free trial.
+
+How it works–
+
+- We define pubkeys in a Nostr Follow List (e.g. kind:3),
+- If a pubkey in that list Posts a Kind 30311 Event,
+- We push a notification into Pushover,
+- We run this workflow periodically or if triggered.
+
+### Set up Nostr Push Notify If Starts a Stream
+
+- **Prerequisites**: Complete the prerequisites as above to have a working n8n instance with Nostrobots Community Nodes installed,
+- **Have a Follow list on Nostr**: A list of pubkeys published to the Nostr network,
+- **Create a Pushover account**: With an Application for your Nostr notifications,
+- **Add credentials for n8n**: Pushover Application Key,
+- **Set workflow variables in the Set Variables Node**: Pushover User Key, Nostr Relays,
+- **Go Live**: Turn workflow to Active.
+
 ## Nostr Auto-React on Hashtag
 
 ![Screenshot of Nostr AI Assistant v1.0 Workflow](Screenshots/Nostr-Auto-React-on-Hashtag-v1-0-Workflow.png)

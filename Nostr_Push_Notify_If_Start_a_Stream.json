@@ -1,0 +1,572 @@
+{
+  "name": "Nostr Push Notify If Start a Stream v1.0",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "85801f5e-0055-4962-a92c-cd3a25bfa0fd",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [300, 500]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 10
+            }
+          ]
+        }
+      },
+      "id": "8b11a8ff-6d16-41af-8624-1df7716847a4",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [300, 320]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "402b5cc0-0a6c-457a-9389-e734bc7475b6",
+              "name": "ownerPushoverUserKey",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "09466e7e-dd38-4c48-9061-f6fec8c1f8cf",
+              "name": "relays",
+              "value": "wss://relay.damus.io, wss://nostrelites.org, wss://relay.nostr.band",
+              "type": "string"
+            },
+            {
+              "id": "3a6577bb-e358-445c-a135-9380a7f3d2e4",
+              "name": "ownerNpub",
+              "value": "npub1r0d8u8mnj6769500nypnm28a9hpk9qg8jr0ehe30tygr3wuhcnvs4rfsft",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "930e6f67-72be-426a-b1ea-8f07f515df67",
+      "name": "Set Variables",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [520, 320]
+    },
+    {
+      "parameters": {
+        "userKey": "={{ $('Set Variables').first().json.ownerPushoverUserKey }}",
+        "message": "={{ $('Read Posts').item.json.tags.find(tag => tag[0] === 'current_participants')[1] }} people online | {{ $('Read Posts').item.json.tags.find(tag => tag[0] === 'title')[1] }} – {{ $('Read Posts').item.json.tags.find(tag => tag[0] === 'summary')[1] }}",
+        "priority": 0,
+        "additionalFields": {
+          "title": "={{ $('Merge').item.json.displayName }} is live",
+          "url": "=https://zap.stream/{{ $json.naddr }}"
+        }
+      },
+      "id": "9dd13207-8db2-49d0-bceb-0c08f8025d93",
+      "name": "Push Notify",
+      "type": "n8n-nodes-base.pushover",
+      "typeVersion": 1,
+      "position": [3720, 320],
+      "credentials": {
+        "pushoverApi": {
+          "id": "xr7fQBwzRU3vhSAO",
+          "name": "Pushover App Nostr"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "9f0456cf-8b9b-4834-993e-3dc0e7a347c6",
+      "name": "Workflow Complete",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [3960, 500]
+    },
+    {
+      "parameters": {
+        "content": "## Nostr Push Notifications when Follows Start a Live Event\n\nThis workflow sends a push notification in Pushover if any of the follows Start a Live Event on Nostr –\n\n- We define pubkeys in a Nostr Follow List (e.g. kind:3),\n- If a pubkey in that list Posts a Kind 30311 Event,\n- We push a notification into Pushover,\n- We run this workflow periodically or if triggered.\n\n## Requirements\n\nTo use this workflow we need –\n\n- [Nostrobots Community Nodes](https://github.com/ocknamo/n8n-nodes-nostrobots/tree/main) by [Ocknamo](https://njump.me/npub1y6aja0kkc4fdvuxgqjcdv4fx0v7xv2epuqnddey2eyaxquznp9vq0tp75l), \n- A follow list of pubkeys published to the Nostr network,\n- A [Pushover](https://pushover.net/) account with an Application for your Nostr notifications,\n- Credentials for N8N: Pushover Application Key,\n- Workflow variables set in the Set Variables Node: Pushover User Key, Relays.\n\n## In use\n\nEach time this workflow runs it queries your list of pubkeys, and then if any of those pubkeys have started a livestream (posted a kind 30311 event) it push notifies you. To adjust which pubkeys give you notifications, publish an update to your follow list.",
+        "height": 1014,
+        "width": 883,
+        "color": 6
+      },
+      "id": "3d1e0cc7-b19c-4ea6-bd9a-4f7822af39db",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [240, -320]
+    },
+    {
+      "parameters": {
+        "content": "## Check All Pubkeys for Stream Starts and Notify if Found\n \n\n- read all posts of all pubkeys, \n- check if streams exist, and if they just started\n- create a useful naddr address,\n- push notify the event text with a zap.stream link to the naddr.",
+        "height": 644,
+        "width": 3062
+      },
+      "id": "db3aff05-283d-4084-ab8b-2de66975f87e",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [1160, 40]
+    },
+    {
+      "parameters": {
+        "strategy": "rawFilter",
+        "rawFilter": "={\n  \"kinds\":[3],\n  \"authors\":[\"{{ $json.output }}\"],\n  \"limit\":1\n} ",
+        "from": 5,
+        "relay": "={{ $('Set Variables').item.json.relays }}"
+      },
+      "id": "c1a65e5e-f29e-4e3e-b7a6-d608f7fbf01e",
+      "name": "Get Pubkeys from List",
+      "type": "n8n-nodes-nostrobots.nostrobotsread",
+      "typeVersion": 1,
+      "position": [960, 320],
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "content": "## Initial Pushover Setup\n\n1. In Pushover register an Account, add your devices (e.g. your phone), and set up an Application (e.g. \"Nostr Notifications\"),\n2. Add the Pushover Application Key to your n8n Credentials,\n3. Add the Pushover User Key to the Set Variables Node at the Startup of the Workflow,\n4. You can configure the Application can have an icon and you can use this one – \n\n![Nostr Icon](https://pushover.net/icons/b5vpp7tytjiw5k8.png)",
+        "height": 338.96973001386107,
+        "width": 615.8801950827736,
+        "color": 5
+      },
+      "id": "b67f003d-a200-49bb-93f4-f6cfecc0ccd9",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [1160, -325.5083205546588]
+    },
+    {
+      "parameters": {
+        "strategy": "rawFilter",
+        "rawFilter": "={\n  \"#p\":[{{ $json.pTagsString }}],\n  \"kinds\":[30311]\n}",
+        "from": 10.2,
+        "unit": "minute",
+        "relay": "={{ $('Set Variables').item.json.relays }}"
+      },
+      "id": "eb8e1b3a-b78c-4a30-ae6b-11571e325f66",
+      "name": "Read Posts",
+      "type": "n8n-nodes-nostrobots.nostrobotsread",
+      "typeVersion": 1,
+      "position": [1440, 320],
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "transformKey",
+        "transformTo": "hexpubkey",
+        "transformInput": "={{ $json.ownerNpub }}"
+      },
+      "type": "n8n-nodes-nostrobots.nostrobotsutils",
+      "typeVersion": 1,
+      "position": [740, 320],
+      "id": "dc5286b5-eca2-4121-93d8-7a264c9e7d81",
+      "name": "Nostr Utils"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// This code runs once per item\n// You can paste it directly into a n8n Code node\n// Make sure \"Execute Once\" is turned OFF so it actually runs per each item.\n\nconst tags = $json.tags || [];\n\n// Filter tags where first element is \"p\", then take second element\nconst pTags = tags\n  .filter(t => t[0] === 'p')\n  .map(t => t[1]);\n\n// Build a quoted, comma-separated string\nconst pTagsString = pTags.map(value => `\"${value}\"`).join(',');\n\n// Return a new item (or merge with $json if you want to keep the original data)\nreturn {\n  json: {\n    ...$json,\n    pTagsString\n  }\n};\n"
+      },
+      "id": "b324a829-13b5-4a7b-94bc-eba69119b67b",
+      "name": "Format List of Pubkeys",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1220, 320]
+    },
+    {
+      "parameters": {
+        "event": "={\n  \"id\": \"{{ $json.id }}\",\n  \"pubkey\": \"{{ $json.pubkey }}\",\n  \"created_at\": {{ $json.created_at }},\n  \"kind\": {{ $json.kind }},\n  \"tags\": [\n    [\n      \"d\",\n      \"{{ $json.tags.find(tag => tag[0] === 'd')[1] }}\"\n    ]\n  ],\n  \"content\": \"\"\n}",
+        "relayhints": "={{ $('Set Variables').first().json.relays }}"
+      },
+      "id": "310a75cb-2417-4b11-804c-a1b599be5517",
+      "name": "Transform ID to Naddr",
+      "type": "n8n-nodes-nostrobots.nostrobotsutils",
+      "typeVersion": 1,
+      "position": [3480, 320]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "357acad2-ae69-4f8c-81a9-524c822ae8c4",
+              "leftValue": "={{$json}}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "1de97bb3-59d5-4dab-b6e6-713cd4e194f0",
+      "name": "Do Streams Exist?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [1700, 320]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9f430cd9-3b60-4537-bcb8-80247dcf8614",
+              "leftValue": "={{ ( (Date.now() / 1000 ) - parseInt($json.tags.find(tag => tag[0] === 'starts')?.[1] ?? '0', 10) ) <= 600 }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [2000, 320],
+      "id": "7d3bfd3f-857a-42ef-8ea4-343c258d0ee8",
+      "name": "Did They Just Start?"
+    },
+    {
+      "parameters": {
+        "content": "## Handling updates \nStreamers continuously update their naddr for a running stream (e.g. Zapstream updates every 15 minutes), so the existence of a new note is not enough, we need to check the \"start\" time.",
+        "height": 140,
+        "width": 400
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [1860, 500],
+      "typeVersion": 1,
+      "id": "c2e9f735-04a1-4647-8a94-590ce00c2e0e",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1fedf404-a4f7-46e7-ae62-07e2aad72b4f",
+              "name": "displayName",
+              "value": "={{ JSON.parse($json[\"content\"]).display_name || JSON.parse($json[\"content\"]).name }}",
+              "type": "string"
+            },
+            {
+              "id": "5bf7641e-5cf9-4593-8b04-b31d02431ec9",
+              "name": "host",
+              "value": "={{ $('Extract Host Pubkey').item.json.host }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "include": "selected",
+        "includeFields": "displayName, host",
+        "options": {}
+      },
+      "id": "3897d11a-0c00-4c24-8a0c-2991cabc97b6",
+      "name": "Extract displayName",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [2980, 180]
+    },
+    {
+      "parameters": {
+        "strategy": "rawFilter",
+        "rawFilter": "={\n  \"kinds\":[0],\n  \"authors\":[\"{{ $json.host }}\"]\n} ",
+        "from": 365,
+        "relay": "=wss://purplepag.es,{{ $('Set Variables').first().json.relays }}"
+      },
+      "id": "b13e2869-09c8-4ab3-a001-3485ad812a50",
+      "name": "Read Profiles",
+      "type": "n8n-nodes-nostrobots.nostrobotsread",
+      "typeVersion": 1,
+      "position": [2540, 180]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Input: Array of events\nconst events = items.map(item => item.json);\n\n// Group events by pubkey and select the latest event for each pubkey\nconst latestEvents = Object.values(\n  events.reduce((acc, event) => {\n    const pubkey = event.pubkey;\n    if (!acc[pubkey] || acc[pubkey].created_at < event.created_at) {\n      acc[pubkey] = event;\n    }\n    return acc;\n  }, {})\n);\n\n// Convert the latest events into the n8n output format\nreturn latestEvents.map(event => ({ json: event }));\n"
+      },
+      "id": "b6bc94ae-678a-4ac7-aad8-d86d48e6acaa",
+      "name": "Filter Latest",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2760, 180]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "host",
+        "joinMode": "enrichInput1",
+        "options": {}
+      },
+      "id": "39f62e1a-7286-47bd-970c-5210eb5ebd65",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [3240, 320]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const tags = item.json.tags || [];\n\nconst pTags = tags.filter(tag => tag[0] === 'p');\n\nlet selectedTag;\n\nif (pTags.length === 1) {\n  selectedTag = pTags[0];\n} else if (pTags.length > 1) {\n  selectedTag = pTags.find(tag => (tag[2] || '').toLowerCase() === 'host');\n\n  if (!selectedTag) {\n    selectedTag = pTags.find(tag => (tag[2] || '').toLowerCase() === 'room owner');\n  }\n\n  if (!selectedTag) {\n    selectedTag = pTags[0];\n  }\n}\n\nreturn {\n  json: {\n    ...item.json,\n    host: selectedTag ? selectedTag[1] : null\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2280, 300],
+      "id": "17351bba-4573-4dc3-9d30-08608a5b0160",
+      "name": "Extract Host Pubkey"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Set Variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set Variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Push Notify": {
+      "main": [
+        [
+          {
+            "node": "Workflow Complete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Variables": {
+      "main": [
+        [
+          {
+            "node": "Nostr Utils",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Pubkeys from List": {
+      "main": [
+        [
+          {
+            "node": "Format List of Pubkeys",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Posts": {
+      "main": [
+        [
+          {
+            "node": "Do Streams Exist?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Nostr Utils": {
+      "main": [
+        [
+          {
+            "node": "Get Pubkeys from List",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format List of Pubkeys": {
+      "main": [
+        [
+          {
+            "node": "Read Posts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform ID to Naddr": {
+      "main": [
+        [
+          {
+            "node": "Push Notify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Do Streams Exist?": {
+      "main": [
+        [
+          {
+            "node": "Did They Just Start?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Workflow Complete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Did They Just Start?": {
+      "main": [
+        [
+          {
+            "node": "Extract Host Pubkey",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Workflow Complete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract displayName": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Read Profiles": {
+      "main": [
+        [
+          {
+            "node": "Filter Latest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Latest": {
+      "main": [
+        [
+          {
+            "node": "Extract displayName",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Transform ID to Naddr",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Host Pubkey": {
+      "main": [
+        [
+          {
+            "node": "Read Profiles",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "82df9f80-4b1c-4ce0-935e-9c2d45567624",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "116b49d6f3394f8a5d690ef016c12ee9efff737700b050bfcafac43155fb279c"
+  },
+  "id": "lJqSy140ZkgvPbaw",
+  "tags": [
+    {
+      "createdAt": "2024-12-11T03:04:40.706Z",
+      "updatedAt": "2024-12-11T03:04:40.706Z",
+      "id": "Mlkk6z6n2UOLQ9i6",
+      "name": "Current"
+    },
+    {
+      "createdAt": "2025-01-17T06:19:30.312Z",
+      "updatedAt": "2025-01-17T06:19:30.312Z",
+      "id": "uMcGYGTxk44BsNSj",
+      "name": "Push"
+    },
+    {
+      "createdAt": "2024-11-19T03:08:06.146Z",
+      "updatedAt": "2024-11-19T03:08:06.146Z",
+      "id": "zmiLz0ZrQJaT4QMQ",
+      "name": "Nostr"
+    }
+  ]
+}
